@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Secrets and local config
+.env
+.env.local
+sources.json
+
+# Logs
+*.log
+/tmp/cr-*.log
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Local-only scratch
+prompt.md
+.git.old-*/
