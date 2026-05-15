@@ -1,0 +1,25 @@
+{
+  "name": "aistream",
+  "version": "0.1.0",
+  "description": "Local livestream director for Twitch-style broadcasts.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "start": "node --env-file=.env dist/src/index.js",
+    "dev": "tsx --env-file=.env --watch src/index.ts",
+    "test": "tsx --test tests/**/*.test.ts"
+  },
+  "dependencies": {
+    "obs-websocket-js": "^5.0.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
