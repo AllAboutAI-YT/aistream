@@ -1,4 +1,4 @@
-import OBSWebSocket from "obs-websocket-js";
+import OBSWebSocket, { type OBSResponseTypes } from "obs-websocket-js";
 import type { ObsClient, ObsState } from "./types.js";
 
 export interface ObsClientOptions {
@@ -97,8 +97,11 @@ export function createObsClient(opts: ObsClientOptions): ObsClient {
     },
     async listScenes(): Promise<string[]> {
       if (!connected) throw new Error("OBS not connected");
-      const res = await obs.call("GetSceneList");
-      return res.scenes.map((s) => String((s as { sceneName: string }).sceneName));
+      const res: OBSResponseTypes["GetSceneList"] = await obs.call("GetSceneList");
+      // OBSResponseTypes types `sceneName` as JsonValue; keep only real, non-empty strings.
+      return res.scenes
+        .map((s) => s.sceneName)
+        .filter((name): name is string => typeof name === "string" && name.length > 0);
     },
     async switchScene(sceneName: string): Promise<void> {
       if (!connected) throw new Error("OBS not connected");

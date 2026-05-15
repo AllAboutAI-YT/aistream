@@ -22,7 +22,8 @@ function intEnv(env: NodeJS.ProcessEnv, name: string, def: number): number {
 function floatEnv(env: NodeJS.ProcessEnv, name: string, def: number): number {
   const v = trimmed(env, name);
   if (v == null) return def;
-  const n = Number.parseFloat(v);
+  // Number() (not parseFloat) so that "0.7abc" becomes NaN and is rejected.
+  const n = Number(v);
   if (!Number.isFinite(n)) {
     throw new Error(`Invalid number for env ${name}: ${v}`);
   }
@@ -84,13 +85,13 @@ export function validateSources(input: unknown): SceneSource[] {
       throw new Error(`sources[${i}] must be an object`);
     }
     const src = raw as Partial<SceneSource>;
-    if (typeof src.id !== "string" || src.id.length === 0) {
+    if (typeof src.id !== "string" || src.id.trim().length === 0) {
       throw new Error(`sources[${i}].id must be a non-empty string`);
     }
-    if (typeof src.obsScene !== "string" || src.obsScene.length === 0) {
+    if (typeof src.obsScene !== "string" || src.obsScene.trim().length === 0) {
       throw new Error(`sources[${i}].obsScene must be a non-empty string`);
     }
-    if (typeof src.label !== "string" || src.label.length === 0) {
+    if (typeof src.label !== "string" || src.label.trim().length === 0) {
       throw new Error(`sources[${i}].label must be a non-empty string`);
     }
     if (seen.has(src.id)) {
@@ -109,8 +110,15 @@ export function validateSources(input: unknown): SceneSource[] {
 
 function checkStringArray(value: unknown, label: string): string[] | undefined {
   if (value == null) return undefined;
-  if (!Array.isArray(value) || value.some((v) => typeof v !== "string")) {
+  if (!Array.isArray(value)) {
     throw new Error(`${label} must be an array of strings`);
   }
-  return [...value];
+  const out: string[] = [];
+  for (const item of value) {
+    if (typeof item !== "string" || item.trim().length === 0) {
+      throw new Error(`${label} entries must be non-empty strings`);
+    }
+    out.push(item.trim());
+  }
+  return out;
 }

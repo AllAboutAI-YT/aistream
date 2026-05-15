@@ -51,6 +51,10 @@ test("loadAppConfig rejects AGENT_MIN_CONFIDENCE outside [0,1]", () => {
   assert.throws(() => loadAppConfig({ AGENT_MIN_CONFIDENCE: "nope" }));
 });
 
+test("loadAppConfig rejects partial-numeric env values (Number, not parseFloat)", () => {
+  assert.throws(() => loadAppConfig({ AGENT_MIN_CONFIDENCE: "0.7abc" }));
+});
+
 test("loadAppConfig rejects DECISION_LOG_SIZE < 1", () => {
   assert.throws(() => loadAppConfig({ DECISION_LOG_SIZE: "0" }));
 });
@@ -90,6 +94,25 @@ test("validateSources requires non-empty id, obsScene, label", () => {
   assert.throws(() => validateSources({ sources: [{ id: "", obsScene: "x", label: "y" }] }));
   assert.throws(() => validateSources({ sources: [{ id: "x", obsScene: "", label: "y" }] }));
   assert.throws(() => validateSources({ sources: [{ id: "x", obsScene: "y", label: "" }] }));
+});
+
+test("validateSources rejects whitespace-only id, obsScene, label", () => {
+  assert.throws(() => validateSources({ sources: [{ id: "   ", obsScene: "x", label: "y" }] }));
+  assert.throws(() => validateSources({ sources: [{ id: "x", obsScene: "  ", label: "y" }] }));
+  assert.throws(() => validateSources({ sources: [{ id: "x", obsScene: "y", label: "\t" }] }));
+});
+
+test("validateSources rejects empty/whitespace chatCommands or voicePhrases entries", () => {
+  assert.throws(() =>
+    validateSources({
+      sources: [{ id: "a", obsScene: "A", label: "A", chatCommands: ["!ok", ""] }],
+    }),
+  );
+  assert.throws(() =>
+    validateSources({
+      sources: [{ id: "a", obsScene: "A", label: "A", voicePhrases: ["ok", "  "] }],
+    }),
+  );
 });
 
 test("validateSources rejects bad chatCommands/voicePhrases types", () => {

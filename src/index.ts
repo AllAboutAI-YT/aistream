@@ -35,20 +35,45 @@ async function main(): Promise<void> {
   }
 
   const server = createApp({ director });
+  server.on("error", (err) => {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[director] HTTP server error: ${msg}`);
+    process.exit(1);
+  });
   server.listen(cfg.port, cfg.host, () => {
     console.log(`[director] HTTP API listening on http://${cfg.host}:${cfg.port}`);
   });
 
   let shuttingDown = false;
-  const shutdown = (sig: string): void => {
+  const shutdown = async (sig: string): Promise<void> => {
     if (shuttingDown) return;
     shuttingDown = true;
     console.log(`[director] ${sig} received, shutting down`);
-    server.close();
-    void obs.disconnect().finally(() => process.exit(0));
+    try {
+      await new Promise<void>((resolve, reject) => {
+        server.close((err) => (err ? reject(err) : resolve()));
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`[director] server.close failed: ${msg}`);
+    }
+    try {
+      await obs.disconnect();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`[director] obs.disconnect failed: ${msg}`);
+    }
+    process.exit(0);
   };
-  process.on("SIGINT", () => shutdown("SIGINT"));
-  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  const onSignal = (sig: string): void => {
+    shutdown(sig).catch((err: unknown) => {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`[director] shutdown error: ${msg}`);
+      process.exit(1);
+    });
+  };
+  process.on("SIGINT", () => onSignal("SIGINT"));
+  process.on("SIGTERM", () => onSignal("SIGTERM"));
 }
 
 function warnMissingScenes(sources: { id: string; obsScene: string }[], known: string[]): void {
