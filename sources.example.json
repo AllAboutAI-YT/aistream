@@ -1,0 +1,39 @@
+{
+  "sources": [
+    {
+      "id": "holding",
+      "obsScene": "Holding",
+      "label": "Holding card",
+      "chatCommands": ["!holding"],
+      "voicePhrases": ["holding", "show holding"]
+    },
+    {
+      "id": "fullcam",
+      "obsScene": "Full Cam",
+      "label": "Operator full cam",
+      "chatCommands": ["!cam", "!fullcam"],
+      "voicePhrases": ["full cam", "show full cam", "operator"]
+    },
+    {
+      "id": "screen",
+      "obsScene": "Local Screen",
+      "label": "Local screen share",
+      "chatCommands": ["!screen"],
+      "voicePhrases": ["screen", "show screen"]
+    },
+    {
+      "id": "macbookcam",
+      "obsScene": "MacBook Cam",
+      "label": "Remote MacBook cam (SRT)",
+      "chatCommands": ["!macbookcam", "!mb"],
+      "voicePhrases": ["macbook cam", "mb cam", "show macbook"]
+    },
+    {
+      "id": "dgx",
+      "obsScene": "DGX",
+      "label": "Remote DGX/Spark screen (SRT)",
+      "chatCommands": ["!dgx"],
+      "voicePhrases": ["dgx", "ggx", "show dgx", "switch to dgx"]
+    }
+  ]
+}

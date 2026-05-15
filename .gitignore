@@ -15,10 +15,11 @@ sources.json
 *.log
 /tmp/cr-*.log
 
-# OS / editor
+# OS / editor / agent tooling
 .DS_Store
 .idea/
 .vscode/
+.claude/
 
 # Local-only scratch
 prompt.md
